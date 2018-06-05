@@ -8,6 +8,7 @@
 
 import UIKit
 
+/// Animal kingdom view controller
 class AnimalKingdomViewController: UIViewController {
 
     static let identifier = "AnimalKingdomViewController"
@@ -18,18 +19,30 @@ class AnimalKingdomViewController: UIViewController {
     
     var viewModel = AnimalKingdomViewModel()
     private var objectButtons = [ObjectButton]()
+    private var orientation = UIDevice.current.orientation
     
     
     //MARK: - CONTROLLER LIFECYCLE
     
     override func viewDidLoad() {
         super.viewDidLoad()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         setupView()
     }
     
     
-    override func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {
-        super.willTransition(to: newCollection, with: coordinator)
+    //re generate button position if orientation is changed
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        if orientation != UIDevice.current.orientation {
+            orientation = UIDevice.current.orientation
+            viewModel.setupNewFrame(frame: animalDisplayView.bounds)
+            removeAllButton()
+            addNewAnimalButton()
+        }
         
     }
     
@@ -39,10 +52,12 @@ class AnimalKingdomViewController: UIViewController {
     //setup view for first time
     private func setupView() {
         soundButton.setImage(AudioHandler.muteAppMusic ? #imageLiteral(resourceName: "mute") : #imageLiteral(resourceName: "sound"), for: .normal)
-        viewModel = AnimalKingdomViewModel(frame: animalDisplayView.frame)
+        viewModel = AnimalKingdomViewModel(frame: animalDisplayView.bounds)
         loadNextRound()
     }
     
+    
+    //load next round if correct answer was pressed
     private func loadNextRound() {
         removeAllButton()
         if viewModel.setupNextRound() {
@@ -101,12 +116,14 @@ class AnimalKingdomViewController: UIViewController {
     //action after animal buttons are tapped
     @objc func buttonTapped(sender: ObjectButton) {
         if sender.object == viewModel.correctAnimal {
+            AudioHandler.play(audio: sender.object)
             sender.popBubble(completion: {
                 sender.isHidden = true
                 sender.removeFromSuperview()
-                AudioHandler.play(audio: sender.object)
                 self.loadNextRound()
             })
+        } else {
+            sender.alpha = 0.3
         }
     }
 }

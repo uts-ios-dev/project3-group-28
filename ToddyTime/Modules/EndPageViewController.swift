@@ -8,6 +8,8 @@
 
 import UIKit
 
+
+/// Page that shows progress of users
 class EndPageViewController: UIViewController {
     
     @IBOutlet weak var titleLabel: UILabel!
@@ -19,7 +21,10 @@ class EndPageViewController: UIViewController {
     static let identifier = "EndPageViewController"
 
     var isAnimalKingdom = true
-    var learnedObject = [String]()
+    var learnedObject = [String]()      // learned object in this game
+    
+    
+    //MARK: - VIEW LIFECYCLE
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,6 +33,8 @@ class EndPageViewController: UIViewController {
         button2Label.layer.cornerRadius = 15
         button2Label.layer.masksToBounds = true
         
+        
+        //manage progress according to the game played
         if isAnimalKingdom {
             button1Label.backgroundColor = AppDefault.greenColor
             button1Label.textColor = AppDefault.whiteColor
@@ -48,6 +55,7 @@ class EndPageViewController: UIViewController {
         
     }
     
+    //MARK: - BUTTON EVENT
     
     @IBAction func buttonTapped(_ sender: UIButton) {
         if sender.tag == 1 {
@@ -58,15 +66,19 @@ class EndPageViewController: UIViewController {
     }
     
     
+    //MARK: - PRIVATE FUNCTIONS
     
-    func loadAnimalKingdomPage() {
+    
+    // redirect to animal kingdom page
+    private func loadAnimalKingdomPage() {
         if let animalKingdomController = storyboard?.instantiateViewController(withIdentifier: AnimalKingdomViewController.identifier) as? AnimalKingdomViewController {
             let rootController = self.navigationController?.viewControllers[0]
             self.navigationController?.setViewControllers([rootController!, animalKingdomController], animated: true)
         }
     }
     
-    func loadPicturePlayPage() {
+    // redirect to picture play game
+    private func loadPicturePlayPage() {
         if let picturePlayController = storyboard?.instantiateViewController(withIdentifier: PicturePlayViewController.identifier) as? PicturePlayViewController {
             let rootController = self.navigationController?.viewControllers[0]
             self.navigationController?.setViewControllers([rootController!, picturePlayController], animated: true)
@@ -74,6 +86,9 @@ class EndPageViewController: UIViewController {
     }
     
 }
+
+
+//MARK: - TABLEVIEW DATASOURCE AND DELEGATE
 
 extension EndPageViewController: UITableViewDataSource, UITableViewDelegate {
     

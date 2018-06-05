@@ -10,32 +10,9 @@ import UIKit
 
 extension UIView {
     
-    func animateShow() {
-        
-        if let parent = self.superview {
-            parent.alpha = 0
-            UIView.animate(withDuration: 0.3, animations: {
-                parent.alpha = 1.0
-            })
-        }
-        self.alpha = 0
-        self.layer.shouldRasterize = true
-        self.transform = CGAffineTransform(scaleX: 0.4, y: 0.4)
-        
-        UIView.animate(withDuration: 0.2, animations: {
-            self.alpha = 1.0
-            self.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
-        }) { (success) in
-            
-            UIView.animate(withDuration: 0.1, delay: 0.0, options: .curveEaseInOut, animations: {
-                self.alpha = 1.0
-                self.transform = .identity
-            }, completion: { (finished) in
-                self.layer.shouldRasterize = false
-            })
-        }
-    }
+    //MARK: - ANIMATION FUNCTIONS
     
+    //hide animation for view
     func hideAnimate(_ completed:((_ done:Bool)->())! = nil) {
         if let parent = self.superview {
             UIView.animate(withDuration: 0.3, animations: {
@@ -61,6 +38,7 @@ extension UIView {
     }
 
     
+    //scale animation for view
     func scale(fromValue: Double, toValue: Double, withDuration: Double) {
         let scaleAnimation = CABasicAnimation(keyPath: "transform.scale")
         scaleAnimation.delegate = self
@@ -71,6 +49,8 @@ extension UIView {
         
     }
     
+    
+    //fade animation for view
     func fade(fromValue: Double, toValue: Double, withDuration: Double) {
         let fadeAnimation = CABasicAnimation(keyPath: "opacity")
         fadeAnimation.delegate = self
@@ -80,6 +60,9 @@ extension UIView {
         layer.add(fadeAnimation, forKey: "fade")
     }
 }
+
+
+//MARK: - ANIMATION DELEGATE
 
 extension UIView: CAAnimationDelegate {
     public func animationDidStop(_ anim: CAAnimation, finished flag: Bool) {

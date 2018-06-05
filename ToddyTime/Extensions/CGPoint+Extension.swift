@@ -12,18 +12,23 @@ import UIKit
 
 extension CGPoint {
     
+    //returns distance between self and other point
     func distanceFrom(point: CGPoint) -> CGFloat {
         let xDist = self.x - point.x
         let yDist = self.y - point.y
         return sqrt((xDist * xDist + yDist * yDist))
     }
     
+    //returns random point in given rect
     static func getRandomPoint(in frame: CGRect) -> CGPoint {
         let randomX = CGFloat.randomNumberBetween(lowerNumber: 0, upperNumber: frame.width)
         let randomY = CGFloat.randomNumberBetween(lowerNumber: 0, upperNumber: frame.height)
         return CGPoint(x: randomX, y: randomY)
     }
 }
+
+
+//MARK: - GENERATE RANDOM NUMBERS
 
 extension CGFloat {
     static func randomNumberBetween(lowerNumber: CGFloat, upperNumber: CGFloat) -> CGFloat {

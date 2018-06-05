@@ -11,31 +11,74 @@ import UIKit
 
 class PicturePlayViewModel {
     
-    let totalNumberOfAnimalDisplayed = 4
     private var frame = CGRect()
     private(set) var randomPoints = [CGPoint]()
     private(set) var randomObjects = [String]()
+    private(set) var answerObjects = [String]()
     private(set) var isRandomObjectSelected = [Bool]()
+    
+    //checks if all data is selected or not
+    var isAllChecked : Bool {
+        return !isRandomObjectSelected.contains(false)
+    }
+    
     
     init(frame: CGRect) {
         self.frame = frame
+        print(frame)
         generateButton()
     }
     
     init() {
     }
     
-    func generateButton() {
-        let frame = CGRect(origin: self.frame.origin, size: CGSize(width: self.frame.size.width - AppDefault.buttonLength, height: self.frame.size.height - AppDefault.buttonLength))
-        for _ in 0 ..< totalNumberOfAnimalDisplayed {
-            randomPoints.append(getRandomPoint(in: frame))
-            isRandomObjectSelected.append(false)
-        }
-        try! randomObjects = appDatabase.getObject(numberOfObject: totalNumberOfAnimalDisplayed)
+    
+    //regenerate button origin after the orientation was updated
+    func updateFrame(with frame: CGRect) {
+        self.frame = frame
+        generateRandomPoints()
     }
     
+    //generate possible rect origins
+    private func getRandomPointArray() -> [CGPoint] {
+        var randomPointArray = [CGPoint]()
+        let numberOfButtonInaRow = Int(frame.width / AppDefault.buttonLength)
+        let numberOfButtonInaColumn = Int(frame.height / AppDefault.buttonLength)
+        
+        for rowNumber in 0 ..< numberOfButtonInaColumn {
+            let y = rowNumber * Int(AppDefault.buttonLength)
+            for columnNumber in 0 ..< numberOfButtonInaRow {
+                let x = columnNumber * Int(AppDefault.buttonLength)
+                randomPointArray.append(CGPoint(x: x, y: y))
+            }
+        }
+        return randomPointArray
+    }
+    
+    
+    //generate random points
+    private func generateRandomPoints() {
+        randomPoints = [CGPoint]()
+        var randomPointArray = getRandomPointArray()
+        for _ in 0 ..< AppDefault.totalNumberOfObjectDisplayed {
+            let randomIndex = Int.randomNumberBetween(lowerNumber: 0, upperNumber: randomPointArray.count - 1)
+            randomPoints.append(randomPointArray.remove(at: randomIndex))
+        }
+    }
+    
+    
+    //generate random points and objects
+    func generateButton() {
+        generateRandomPoints()
+        try! randomObjects = appDatabase.getObject(numberOfObject: AppDefault.totalNumberOfObjectDisplayed)
+        answerObjects = Array(0 ..< AppDefault.totalNumberObjectListed).map{randomObjects[$0]}
+        isRandomObjectSelected = Array(0 ..< AppDefault.totalNumberObjectListed).map{_ in return false}
+    }
+    
+    
+    //update selected data array after any object is selected
     func selectObject(object: String) {
-        for (index,eachObject) in randomObjects.enumerated() {
+        for (index,eachObject) in answerObjects.enumerated() {
             if eachObject == object {
                 isRandomObjectSelected[index] = true
                 return
@@ -43,20 +86,4 @@ class PicturePlayViewModel {
         }
     }
     
-    
-    private func getRandomPoint(in frame: CGRect) -> CGPoint {
-        while true {
-            let randomPoint = CGPoint.getRandomPoint(in: frame)
-            var isValidPoint = true
-            for eachPoint in randomPoints {
-                if AppDefault.does(buttonAtOrigin: eachPoint, intersectWithButtonAtOrigin: randomPoint) {
-                    isValidPoint = false
-                    break
-                }
-            }
-            if isValidPoint {
-                return randomPoint
-            }
-        }
-    }
 }

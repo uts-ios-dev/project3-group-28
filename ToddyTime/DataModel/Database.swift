@@ -17,6 +17,8 @@ struct Database {
     
     static let instance = Database()
     
+    
+    //get data form database.plist file
     init() {
         if let path = Bundle.main.path(forResource: "Database", ofType: "plist"), let database = NSDictionary(contentsOfFile: path) {
             animals = (database.value(forKey: "animal") as? [String]) ?? [String]()
@@ -24,13 +26,27 @@ struct Database {
         }
     }
     
+    
+    //get any random animal
     func getRandomAnimal() -> String {
          return animals[Int.randomNumberBetween(lowerNumber: 0, upperNumber: animals.count - 1)]
     }
     
+    
+    //get any random object
     func getRandomObject() -> String {
         return objects[Int.randomNumberBetween(lowerNumber: 0, upperNumber: objects.count - 1)]
     }
+    
+    
+    
+    /// get number of random objects
+    ///
+    /// - Parameters:
+    ///   - numberOfObject: number of object required
+    ///   - object: result must not include this object
+    /// - Returns: random objects form the database
+    /// - Throws: exception if data count is not sufficient
     
     func getObject(numberOfObject: Int, except object: String = "") throws -> [String] {
         var tempObject = objects.filter{ return $0 != object }
@@ -38,6 +54,9 @@ struct Database {
         return Array( 0 ..< numberOfObject).map{_ in tempObject.remove(at: Int.randomNumberBetween(lowerNumber: 0, upperNumber: tempObject.count - 1))}
     }
     
+    
+    
+    // get number of random animals form database
     func getAnimal(numberOfAnimals: Int, except animal: String = "") throws -> [String] {
         var tempAnimal = animals.filter{ return $0 != animal }
         guard numberOfAnimals <= tempAnimal.count else {throw AppError.DataCountError}

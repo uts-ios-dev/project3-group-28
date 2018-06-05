@@ -17,9 +17,11 @@ class AnimalKingdomViewModel {
     private(set) var correctAnimals = [String]()
     private var currentRound = 0
     
+    // correct animal for current round
     var correctAnimal: String {
         return correctAnimals[currentRound - 1]
     }
+    
     
     init(frame: CGRect) {
         self.frame = frame
@@ -30,10 +32,30 @@ class AnimalKingdomViewModel {
     }
     
     
+    //generate possible rect origins
+    private func getRandomPointArray() -> [CGPoint] {
+        var randomPointArray = [CGPoint]()
+        let numberOfButtonInaRow = Int(frame.width / AppDefault.buttonLength)
+        let numberOfButtonInaColumn = Int(frame.height / AppDefault.buttonLength)
+        
+        for rowNumber in 0 ..< numberOfButtonInaColumn {
+            let y = rowNumber * Int(AppDefault.buttonLength)
+            for columnNumber in 0 ..< numberOfButtonInaRow {
+                let x = columnNumber * Int(AppDefault.buttonLength)
+                randomPointArray.append(CGPoint(x: x, y: y))
+            }
+        }
+        return randomPointArray
+    }
+    
+    
     //setup button for new frame
     func setupNewFrame(frame: CGRect) {
-        
+        self.frame = frame
+        randomPoints = [CGPoint]()
+        generateRandomPoint()
     }
+    
     
     
     //setups next round
@@ -42,36 +64,28 @@ class AnimalKingdomViewModel {
         guard currentRound <= AppDefault.numberOfRound else { return false }
         randomPoints = [CGPoint]()
         randomAnimals = [String]()
-        generateButton()
+        generateRandomPoint()
+        generateRandomAnimals()
         return true
     }
     
     
-    //generate buttons in animals in random positions
-    private func generateButton() {
-        let frame = CGRect(origin: self.frame.origin, size: CGSize(width: self.frame.size.width - AppDefault.buttonLength, height: self.frame.size.height - AppDefault.buttonLength))
+    //generate random positions for buttons
+    fileprivate func generateRandomPoint() {
+        var randomPointArray = getRandomPointArray()
+        
+        //select random points from randomPointArray
         for _ in 0 ..< AppDefault.totalNumberOfAnimalsDisplayed {
-            randomPoints.append(getRandomPoint(in: frame))
+            let randomIndex = Int.randomNumberBetween(lowerNumber: 0, upperNumber: randomPointArray.count - 1)
+            randomPoints.append(randomPointArray.remove(at: randomIndex))
         }
+        
+    }
+    
+    //generate random animals from database
+    private func generateRandomAnimals() {
         randomAnimals = [correctAnimal]
         try! randomAnimals.append(contentsOf: appDatabase.getAnimal(numberOfAnimals: AppDefault.totalNumberOfAnimalsDisplayed - 1, except: correctAnimal))
     }
     
-    
-    //generate random point for butto so that no button intersect with each other
-    private func getRandomPoint(in frame: CGRect) -> CGPoint {
-        while true {
-            let randomPoint = CGPoint.getRandomPoint(in: frame)
-            var isValidPoint = true
-            for eachPoint in randomPoints {
-                if AppDefault.does(buttonAtOrigin: eachPoint, intersectWithButtonAtOrigin: randomPoint) {
-                    isValidPoint = false
-                    break
-                }
-            }
-            if isValidPoint {
-                return randomPoint
-            }
-        }
-    }
 }

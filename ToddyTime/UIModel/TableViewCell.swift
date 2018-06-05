@@ -14,17 +14,9 @@ class TableViewCell: UITableViewCell {
     @IBOutlet weak var tickImage: UIImageView!
     
     
+    //design cell with given title
     func create(withTitle title: String, isChecked: Bool = false) {
         titleLabel.text = title
         tickImage?.isHidden = !isChecked
     }
-    
-    override func awakeFromNib() {
-        super.awakeFromNib()
-    }
-
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-    }
-
 }

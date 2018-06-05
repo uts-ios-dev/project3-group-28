@@ -8,6 +8,7 @@
 
 import UIKit
 
+/// First page launched by app
 class LaunchViewController: UIViewController {
 
     @IBOutlet weak var soundButton: UIButton!
@@ -15,6 +16,9 @@ class LaunchViewController: UIViewController {
     @IBOutlet weak var picturePlayLabel: UILabel!
     @IBOutlet weak var gapConstraint: NSLayoutConstraint!
     @IBOutlet weak var topConstraint: NSLayoutConstraint!
+    
+    
+    //MARK: - VIEW LIFECYCLE
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,6 +31,7 @@ class LaunchViewController: UIViewController {
         picturePlayLabel.layer.masksToBounds = true
     }
     
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
@@ -36,6 +41,8 @@ class LaunchViewController: UIViewController {
         }
     }
     
+    
+    //change view when device changes orientation
     override func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {
         super.willTransition(to: newCollection, with: coordinator)
         gapConstraint.constant = UIDevice.current.orientation.isPortrait ? 100 : 20
@@ -49,17 +56,18 @@ class LaunchViewController: UIViewController {
         soundButton.setImage(AudioHandler.muteAppMusic ? #imageLiteral(resourceName: "mute") : #imageLiteral(resourceName: "sound"), for: .normal)
     }
     
+    //redirect to animal kingdom game
     @IBAction func animalKingdomTapped(_ sender: Any) {
         if let animalKingdomController = self.storyboard?.instantiateViewController(withIdentifier: AnimalKingdomViewController.identifier) as? AnimalKingdomViewController {
             self.navigationController?.pushViewController(animalKingdomController, animated: true)
         }
     }
     
+    
+    //redirects to picture play game
     @IBAction func picturePlayPressed(_ sender: Any) {
         if let picturePlayController = self.storyboard?.instantiateViewController(withIdentifier: PicturePlayViewController.identifier) as? PicturePlayViewController {
             self.navigationController?.pushViewController(picturePlayController, animated: true)
         }
-        
     }
-    
 }
